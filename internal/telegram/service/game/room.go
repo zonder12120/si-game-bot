@@ -111,7 +111,7 @@ func (s *Service) StartAnswer(roomID string, tgID int64) error {
 		return err
 	}
 
-	err = s.updateAdminState(roomID, state.OnConfirmAnser)
+	err = s.updateAdminState(roomID, state.OnConfirmAnswer)
 	if err != nil {
 		return err
 	}
@@ -174,7 +174,7 @@ func (s *Service) correctAnswer(roomID string) error {
 	}
 	err = s.botService.SendMessage(
 		answeringPlayer,
-		fmt.Sprintf(render.MsgAnswerResult, points, getPointsWord(points)),
+		fmt.Sprintf(render.MsgCorrectAnswerResult, points, getPointsWord(points)),
 		nil,
 	)
 	if err != nil {
@@ -216,7 +216,7 @@ func (s *Service) incorrectAnswer(roomID string) error {
 
 	err = s.botService.SendMessage(
 		answeringPlayer,
-		fmt.Sprintf(render.MsgAnswerResult, points, getPointsWord(points)),
+		fmt.Sprintf(render.MsgIncorrectAnswerResult, points, getPointsWord(points)),
 		nil,
 	)
 	if err != nil {

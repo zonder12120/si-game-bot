@@ -53,7 +53,7 @@ func (h *HandlerRegister) RegisterHandlers() error {
 	joinRoomHandler := handlers.NewJoinRoomHandler(h.botService, h.gameService)
 	leaveRoomHandler := handlers.NewLeaveRoomHandler(h.gameService, h.botService)
 
-	playingHandler := handlers.NewPlayingHandler(h.gameService, h.botService, leaveRoomHandler)
+	playingHandler := handlers.NewPlayingHandler(h.gameService, h.botService, h.accessChecker, leaveRoomHandler)
 
 	newRoundMenuHandler := handlers.NewRoundMenuHandler(
 		h.botService,
@@ -78,6 +78,8 @@ func (h *HandlerRegister) RegisterHandlers() error {
 	h.stateDispatcher.AddHandler(confirmAnswerHandler)
 
 	h.stateDispatcher.AddHandler(joinRoomHandler)
+	h.stateDispatcher.AddHandler(leaveRoomHandler)
+
 	h.stateDispatcher.AddHandler(playingHandler)
 
 	h.stateDispatcher.AddHandler(mainMenuHandler)

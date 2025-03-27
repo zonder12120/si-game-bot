@@ -9,6 +9,7 @@ import (
 	"github.com/zonder12120/tg-quiz/internal/telegram/service"
 	"github.com/zonder12120/tg-quiz/internal/telegram/service/game"
 	"github.com/zonder12120/tg-quiz/internal/telegram/state"
+	"github.com/zonder12120/tg-quiz/internal/telegram/user/access"
 )
 
 var playingStates = map[state.State]struct{}{
@@ -17,19 +18,25 @@ var playingStates = map[state.State]struct{}{
 }
 
 type PlayingHandler struct {
-	gameService      *game.Service
-	botService       *service.Bot
+	gameService   *game.Service
+	botService    *service.Bot
+	accessChecker *access.Checker
+
 	leaveRoomHandler *LeaveRoomHandler
 }
 
 func NewPlayingHandler(
 	gameService *game.Service,
 	botService *service.Bot,
+	accessChecker *access.Checker,
+
 	leaveRoomHandler *LeaveRoomHandler,
 ) *PlayingHandler {
 	return &PlayingHandler{
-		gameService:      gameService,
-		botService:       botService,
+		gameService:   gameService,
+		botService:    botService,
+		accessChecker: accessChecker,
+
 		leaveRoomHandler: leaveRoomHandler,
 	}
 }
@@ -56,13 +63,14 @@ func (h *PlayingHandler) handleLeave(c telebot.Context, s *state.UserSession) er
 	tgID := c.Sender().ID
 
 	if c.Text() == render.BtnLeave {
-		h.botService.Log.Debug().Str("user", strconv.Itoa(int(tgID))).Msg("user push leave")
-		err := h.leaveRoomHandler.Handle(c, s)
+		err := h.leaveRoomHandler.handleConfirmLeave(c, s)
 		if err != nil {
 			return err
 		}
+	} else {
+		return h.botService.SendMessage(tgID, render.MsgUnknownCommand, nil)
 	}
-	return h.botService.SendMessage(tgID, render.MsgUnknownCommand, nil)
+	return nil
 }
 
 func (h *PlayingHandler) handlePlaying(c telebot.Context, s *state.UserSession) error {
@@ -70,9 +78,18 @@ func (h *PlayingHandler) handlePlaying(c telebot.Context, s *state.UserSession) 
 
 	switch c.Text() {
 	case render.BtnLeave:
+		h.botService.Log.Debug().Str("user", strconv.Itoa(int(tgID))).Msg("push leave")
+
+		if !h.accessChecker.Check(c, s, access.CmdLeave) {
+			return h.botService.SendMessage(tgID, render.ErrMessageTextForbidden, nil)
+		}
 		return h.handleLeave(c, s)
 	case render.BtnAnswer:
 		h.botService.Log.Debug().Str("user", strconv.Itoa(int(tgID))).Msg("push answer")
+
+		if !h.accessChecker.Check(c, s, access.CmdAnswer) {
+			return h.botService.SendMessage(tgID, render.ErrMessageTextForbidden, nil)
+		}
 		return h.handleAnswering(c, s)
 	}
 	return h.botService.SendMessage(tgID, render.MsgUnknownCommand, nil)

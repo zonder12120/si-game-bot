@@ -12,7 +12,7 @@ import (
 	"github.com/zonder12120/tg-quiz/internal/telegram/user/access"
 )
 
-// state.OnConfirmAnser
+// state.OnConfirmAnswer
 
 type ConfirmAnswerHandler struct {
 	botService    *service.Bot
@@ -33,7 +33,7 @@ func NewConfirmAnswerHandler(
 }
 
 func (h *ConfirmAnswerHandler) CanHandle(currentState state.State) bool {
-	return currentState == state.OnConfirmAnser
+	return currentState == state.OnConfirmAnswer
 }
 
 func (h *ConfirmAnswerHandler) Handle(c telebot.Context, s *state.UserSession) error {

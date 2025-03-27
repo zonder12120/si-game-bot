@@ -45,13 +45,15 @@ func (h *EndGameHandler) Handle(c telebot.Context, s *state.UserSession) error {
 		return nil
 	case render.BtnCancel:
 		h.botService.Log.Debug().Str("user", strconv.Itoa(int(tgID))).Msg("push cancel button")
-		s.UpdateState(state.OnNewRoundMenu)
 		err := h.botService.SendMessage(tgID, render.MsgCreateRound, keyboard.NewRoundMenu())
 		if err != nil {
 			return err
 		}
+		s.UpdateState(state.OnNewRoundMenu)
+	default:
+		return h.botService.SendMessage(tgID, render.MsgUnknownCommand, nil)
 	}
-	return h.botService.SendMessage(tgID, render.MsgUnknownCommand, nil)
+	return nil
 }
 
 func (h *EndGameHandler) handleConfirm(c telebot.Context, s *state.UserSession) error {

@@ -63,6 +63,6 @@ func (h *RoundMenuHandler) Handle(c telebot.Context, s *state.UserSession) error
 		}
 		return h.endGameHandler.handleConfirm(c, s)
 	default:
-		return h.unknownCMDHandler.Handle(c, s)
+		return h.botService.SendMessage(tgID, render.MsgUnknownCommand, nil)
 	}
 }

@@ -36,8 +36,10 @@ func (s *Service) StartTimer(roomID string, timerType TimerType, duration time.D
 		existing.cancel()
 	}
 
+	timeDuration := int(duration.Seconds())
+
 	ctx, cancel := context.WithCancel(context.Background())
-	messageText := fmt.Sprintf(render.MsgTimer, int(duration.Seconds()))
+	messageText := fmt.Sprintf(render.MsgTimer, timeDuration, formatSeconds(timeDuration))
 	messageIDs, _ := s.notifyService.NotifyUsers(tgIDs, messageText, nil)
 
 	s.timers[roomID][timerType] = &Timer{
@@ -72,7 +74,8 @@ func (s *Service) runTimer(roomID string, timerType TimerType, ctx context.Conte
 			}
 			timer.remaining -= 1 * time.Second
 			if timer.remaining > 0 {
-				text := fmt.Sprintf(render.MsgTimer, int(timer.remaining.Seconds()))
+				timeDuration := int(timer.remaining.Seconds())
+				text := fmt.Sprintf(render.MsgTimer, timeDuration, formatSeconds(timeDuration))
 				s.notifyService.UpdateMessages(messageIDs, text)
 				s.mu.Unlock()
 				continue
@@ -130,7 +133,8 @@ func (s *Service) ResumeTimer(roomID string, timerType TimerType, tgIDs []int64)
 			timer.cancel = cancel
 			timer.paused = false
 
-			messageText := fmt.Sprintf(render.MsgTimer, int(timer.remaining.Seconds()))
+			timeDuration := int(timer.remaining.Seconds())
+			messageText := fmt.Sprintf(render.MsgTimer, timeDuration, formatSeconds(timeDuration))
 			messageIDs, _ := s.notifyService.NotifyUsers(tgIDs, messageText, nil)
 			timer.messageIDs = messageIDs
 
@@ -178,4 +182,13 @@ func (s *Service) StopAllTimers(roomID string) {
 			Str("roomID", roomID).
 			Msg("All Timer stopped")
 	}
+}
+
+func formatSeconds(n int) string {
+	if n%10 == 1 && n%100 != 11 {
+		return "секунда"
+	} else if (n%10 >= 2 && n%10 <= 4) && !(n%100 >= 12 && n%100 <= 14) {
+		return "секунды"
+	}
+	return "секунд"
 }

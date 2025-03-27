@@ -9,6 +9,8 @@ const (
 	CmdEndGame       Command = "end_game"
 	CmdStartRound    Command = "start_round"
 	CmdConfirmAnswer Command = "confirm_answer"
+	CmdLeave         Command = "leave"
+	CmdAnswer        Command = "answer"
 )
 
 var accessMap = map[Command][]user.Role{
@@ -16,6 +18,8 @@ var accessMap = map[Command][]user.Role{
 	CmdEndGame:       {user.Admin},
 	CmdStartRound:    {user.Admin},
 	CmdConfirmAnswer: {user.Admin},
+	CmdLeave:         {user.Player},
+	CmdAnswer:        {user.Player},
 }
 
 func HasAccess(group user.Role, command Command) bool {
