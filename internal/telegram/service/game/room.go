@@ -68,17 +68,17 @@ func (s *Service) NewRound(roomID string, points int) error {
 }
 
 func (s *Service) StartRound(roomID string) error {
-	tgIDs, err := s.getAllMembersIDs(roomID)
-	if err != nil {
-		return err
-	}
-
 	if err := s.updateAllPlayersState(roomID, state.OnPlayingRound); err != nil {
 		s.log.Error().Err(err).Str("roomID", roomID).Msg("failed to update player states")
 	}
 
 	if _, err := s.notifyAllPlayers(roomID, render.MsgCanAnswer, keyboard.Answer()); err != nil {
 		s.log.Error().Err(err).Str("roomID", roomID).Msg("failed to notify players")
+	}
+
+	tgIDs, err := s.getAllMembersIDs(roomID)
+	if err != nil {
+		return err
 	}
 
 	s.StartTimer(roomID, RoundTimer, s.gameConfig.RoundTTL, tgIDs)

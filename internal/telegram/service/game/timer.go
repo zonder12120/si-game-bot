@@ -87,14 +87,15 @@ func (s *Service) runTimer(roomID string, timerType TimerType, ctx context.Conte
 			if err != nil {
 				return
 			}
-			err = s.incorrectAnswer(roomID)
-			if err != nil {
-				return
+
+			if timerType == AnswerTimer {
+				err = s.incorrectAnswer(roomID)
+				if err != nil {
+					return
+				}
 			}
-			err = s.EndRound(roomID)
-			if err != nil {
-				return
-			}
+
+			_ = s.EndRound(roomID)
 			return
 
 		case <-ctx.Done():
