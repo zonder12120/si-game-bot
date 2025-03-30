@@ -156,6 +156,8 @@ make clean
 
 Если он нажимает "Начать раунд", то комната будет иметь статус "в игре" и к ней уже будет не присоединиться.
 
+Это может сбить с толку, но раунд в этом боте подразумевает этап вопроса и ответа.
+
 При создании раунда необходимо будет ввести количество очков, которые игроки получат за правильный ответ или потеряют при не правильном ответе.
 
 Далее админ должен зачитать/показать вопрос.
@@ -331,6 +333,8 @@ When creating a round, you need to specify the point value that players will get
 Then the admin should read/show the question.
 
 When "Start round" is clicked, the countdown begins. Players get the option to click "Answer".
+
+It can be confusing, but the round in this bot involves a question and answer stage.
 
 If the round time runs out, the round ends, the final score is shown, and the game moves to creating a new round.
 
