@@ -101,7 +101,7 @@ func (s *Service) StartAnswer(roomID string, tgID int64) error {
 
 	playerName := foundRoom.Players[tgID].Name
 
-	_, err = s.notifyAllPlayers(roomID, fmt.Sprintf(render.MsgWaitAnswer, playerName), keyboard.Leave())
+	_, err = s.notifyAllMembers(roomID, fmt.Sprintf(render.MsgWaitAnswer, playerName), keyboard.Leave())
 	if err != nil {
 		return err
 	}
