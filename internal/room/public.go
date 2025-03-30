@@ -194,6 +194,10 @@ func (m *Manager) StartAnswer(roomID string, tgID int64) error {
 		return fmt.Errorf("не найден указанный игрок")
 	}
 
+	if foundRoom.Round.AnsweringPlayer != 0 {
+		return nil
+	}
+
 	foundRoom.updateTimestamp()
 	foundRoom.Round.AnsweringPlayer = foundPlayer.TgID
 
